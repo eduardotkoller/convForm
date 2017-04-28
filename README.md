@@ -29,7 +29,7 @@ For the plugin to know which question to ask, every input and select must have a
 ```html
 <select conv-question="Hello! I'm a bot created from a HTML form. Can I show you some features?">
 	<option value="yes">Yes</option>
-    <option value="sure">Sure!</option>
+	<option value="sure">Sure!</option>
 </select>
 ```
 
@@ -79,7 +79,7 @@ Inside that div, you need to create div tags with conv-case attribute referencin
 
 ### Referencing previous answers
 
-To use user's answers on questions, you can use ${inputname} inside a conv-question tag, in which inputname references the question you need the answer from. If you want, you can get specific words from the answer using : selector (0-indexed). For example, when you need the user's first name, you can use ${name}:0, and the plugin will get the first word from the "name" question's answer. Example:
+To use user's answers on questions, you can use {inputname} inside a conv-question tag, in which inputname references the question you need the answer from. If you want, you can get specific words from the answer using : selector (0-indexed). For example, when you need the user's first name, you can use {name}:0, and the plugin will get the first word from the "name" question's answer. Example:
 
 ```html
 <input type="text" conv-question="Howdy, {name}:0! It's a pleasure to meet you. How's your day?">
@@ -89,7 +89,7 @@ To use user's answers on questions, you can use ${inputname} inside a conv-quest
 
 You can put messages in the chat flow. They are questions that doesn't expect any answer from the user, so the plugin will go on to the next question instantly. To do this, put a no-answer="true" attribute on an input tag. Example:
 
-```
+```html
 <input type="text" conv-question="A fellow programmer! Cool." no-answer="true">
 ```
 
