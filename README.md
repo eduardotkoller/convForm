@@ -48,7 +48,7 @@ If you want, you can write more than one question for each tag, using pipe | to 
 You can use regex patterns on inputs, just use the pattern attribute on the tag. When the user types an answer, if it doesn't fit the pattern, he can't send it and the input color turns red. Example:
 
 ```html
-<input conv-question="Type in your e-mail" pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" id="email" type="email" name="email" required placeholder="What's your e-mail?">
+<input conv-question="Type in your e-mail" pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" type="email" name="email">
 ```
 
 ### Forking the conversation
