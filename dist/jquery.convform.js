@@ -110,6 +110,12 @@ ConvState.prototype.printAnswers = function(answers, multiple){
                         this.answerWith($(event.target).data("answer").text, $(event.target).data("answer"));
                         this.wrapper.find('div.options div.option').remove();
                     }.bind(this));
+                if(answers[i].hasOwnProperty('callback')){
+                  var callback = answers[i].callback;
+                	option.click(function(event){
+                		window[this]();
+                	}.bind(callback));
+                }
                 this.wrapper.find('div.options').append(option);
                 $(window).trigger('dragreset');
             }
@@ -189,6 +195,8 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                     var answer = {};
                     answer['text'] = $(this).text();
                     answer['value'] = $(this).val();
+		            if($(this).attr('callback'))
+		            	answer['callback'] = $(this).attr('callback');
                     return answer;
                 }).get();
                 if($(this).prop('multiple')){

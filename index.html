@@ -49,6 +49,10 @@
 	                                <input type="text" conv-question="convForm also supports regex patterns. Look:" no-answer="true">
 	                                <input conv-question="Type in your e-mail" pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" id="email" type="email" name="email" required placeholder="What's your e-mail?">
 	                                <input conv-question="Now tell me a secret (like a password)" type="password" data-minlength="6" id="senha" name="password" required placeholder="password">
+																	<select conv-question="Selects also support callback functions. For example, try one of these:">
+																			<option value="google" callback="google">Google</option>
+																			<option value="bing" callback="bing">Bing</option>
+																	</select>
 	                                <select conv-question="This is it! If you like me, consider donating! If you need support, contact me. When the form gets to the end, the plugin submits it normally, like you had filled it." id="">
 	                                    <option value="">Awesome!</option>
 	                                </select>
@@ -64,5 +68,14 @@
 	<script type="text/javascript" src="dist/autosize.min.js"></script>
 	<script type="text/javascript" src="dist/dragscroll.js"></script>
 	<script type="text/javascript" src="dist/jquery.convform.js"></script>
+
+	<script>
+		function google() {
+			window.open("https://google.com");
+		}
+		function bing() {
+			window.open("https://bing.com");
+		}
+	</script>
 </body>
 </html>

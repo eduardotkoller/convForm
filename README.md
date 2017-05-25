@@ -93,6 +93,25 @@ You can put messages in the chat flow. They are questions that doesn't expect an
 <input type="text" conv-question="A fellow programmer! Cool." no-answer="true">
 ```
 
+### Select callbacks
+
+You can use custom functions to be called when a user clicks on an answer from a select. To do this, simply put the name of the function to be called in the "callback" attribute of the option tag:
+
+```html
+<select conv-question="Selects also support callback functions. For example, try one of these:">
+		<option value="google" callback="google">Google</option>
+		<option value="bing" callback="bing">Bing</option>
+</select>
+<script>
+	function google() {
+		window.open("https://google.com");
+	}
+	function bing() {
+		window.open("https://bing.com");
+	}
+</script>
+```
+
 
 
 #### Stuff used to make this:
