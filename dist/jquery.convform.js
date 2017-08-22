@@ -22,6 +22,9 @@ ConvState.prototype.next = function(){
             if(this.answers.hasOwnProperty(this.current.input.fork) && this.answers[this.current.input.fork].value != this.current.input.case) {
                 return this.next();
             }
+            if(!this.answers.hasOwnProperty(this.current.input.fork)) {
+                return this.next();
+            }
         }
         return true;
     } else {
