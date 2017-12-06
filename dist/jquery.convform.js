@@ -69,10 +69,13 @@ ConvState.prototype.printQuestion = function(){
         }
         this.scrollDown();
         if(this.current.input.hasOwnProperty('noAnswer')) {
-            this.next();
-            setTimeout(function(){
-                this.printQuestion();
-            }.bind(this),200);
+            if(this.next()){
+                setTimeout(function(){
+                    this.printQuestion();
+                }.bind(this),200);
+            } else {
+                this.form.submit();
+            }
         }
         $(this.wrapper).find('#userInput').focus();
     }.bind(this), 500);
