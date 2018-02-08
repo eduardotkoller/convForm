@@ -96,6 +96,8 @@ ConvState.prototype.printAnswers = function(answers, multiple){
                             this.current.input.selected.splice(indexOf, 1);
                             $(event.target).removeClass('selected');
                         }
+                        this.wrapper.find('#userInput').removeClass('error');
+                        this.wrapper.find('#userInput').val('');
                         if(this.current.input.selected.length > 0) {
                             this.wrapper.find('button.submit').addClass('glow');
                         } else {
@@ -113,6 +115,8 @@ ConvState.prototype.printAnswers = function(answers, multiple){
                     .data("answer", answers[i])
                     .click(function(event){
                         this.current.input.selected = $(event.target).data("answer").value;
+                        this.wrapper.find('#userInput').removeClass('error');
+                        this.wrapper.find('#userInput').val('');
                         this.answerWith($(event.target).data("answer").text, $(event.target).data("answer"));
                         this.wrapper.find('div.options div.option').remove();
                     }.bind(this));
