@@ -16,6 +16,9 @@ function ConvState(wrapper, SingleConvState, form) {
     }.bind(this);
 }
 ConvState.prototype.next = function(){
+    if(this.current.input.hasOwnProperty('callback')) {
+        window[this.current.input.callback](this);
+    }
     if(this.current.hasNext()){
         this.current = this.current.next;
         if(this.current.input.hasOwnProperty('fork') && this.current.input.hasOwnProperty('case')){
@@ -137,7 +140,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             if(this.current.input.type == 'tel')
                 answerObject = answerObject.replace(/\s|\(|\)|-/g, "");
             this.answers[this.current.input.name] = {text: answerText, value: answerObject};
-            console.log('previous answer: ', answerObject);
+            //console.log('previous answer: ', answerObject);
         } else {
             this.answers[this.current.input.name] = answerObject;
         }
@@ -159,11 +162,11 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
     var diff = $(this.wrapper).find('div.options').height();
     $(this.wrapper).find('#messages').css({paddingBottom: diff});
     $(this.wrapper).find("#userInput").focus();
+    if (answerObject.hasOwnProperty('callback')) {
+        window[answerObject.callback](this);
+    }
     setTimeout(function(){
         $(this.wrapper).find("#messages").append(message);
-        if (answerObject.hasOwnProperty('callback')) {
-            window[answerObject.callback]();
-        }
         this.scrollDown();
     }.bind(this), 300);
 
@@ -196,6 +199,8 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             input['questions'] = $(this).attr('conv-question').split("|");
             if($(this).attr('pattern'))
                 input['pattern'] = $(this).attr('pattern');
+            if($(this).attr('callback'))
+                input['callback'] = $(this).attr('callback');
             if($(this).is('select')) {
                 input['type'] = 'select';
                 input['answers'] = $(this).find('option').map(function(){
@@ -388,4 +393,5 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
 $(function(){
     //instantiate conversation form on .conv-form-wrapper (default class for plugin);
     var convForm = $('.conv-form-wrapper').convform("Write here...");
+    console.log(convForm);
 });
