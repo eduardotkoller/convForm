@@ -78,7 +78,7 @@ ConvState.prototype.printQuestion = function(){
                     this.printQuestion();
                 }.bind(this),200);
             } else {
-                this.parameters.eventList.onSubmitForm();
+                this.parameters.eventList.onSubmitForm(this);
             }
         }
         $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
@@ -178,7 +178,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             this.printQuestion();
         }.bind(this), 300);
     } else {
-        this.parameters.eventList.onSubmitForm();
+        this.parameters.eventList.onSubmitForm(this);
     }
 };
 
@@ -192,8 +192,9 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             timeOutFirstQuestion : 1600,
             buttonClassStyle : 'icon2-arrow',
             eventList : {
-                onSubmitForm : function() {
+                onSubmitForm : function(convState) {
                     console.log('completed');
+                    convState.form.submit();
                     return true;
                 }
             },
@@ -444,6 +445,6 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
 
 $(function(){
     //instantiate conversation form on .conv-form-wrapper (default class for plugin);
-    var convForm = $('.conv-form-wrapper').convform("Write here...");
+    var convForm = $('.conv-form-wrapper').convform();
     console.log(convForm);
 });
