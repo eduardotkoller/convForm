@@ -19,7 +19,7 @@ Example:
 
 ```javascript
 $(function(){
-  var convForm = $('.conv-form-wrapper').convform("Write here...");
+  var convForm = $('.my-conv-form-wrapper').convform();
 });
 ```
 
@@ -112,7 +112,32 @@ You can use custom functions to be called when a user clicks on an answer from a
 </script>
 ```
 
+### Options
 
+You can add an options object as a parameter to the convForm function, containing:
+
+* ```placeHolder```: the placeholder you want to appear on the user's input
+* ```typeInputUi```: 'input' or 'textarea', to choose the type of the html element to use as the user's input
+* ```timeOutFirstQuestion```: time in ms as the duration for the load-up animation before the first question
+* ```buttonClassStyle```: class for the user's submit answer button
+* ```eventList```: an object with functions to be called at specific times, the only supported at the moment is ```onSubmitForm```, and the function is called with the convState as a parameter.
+* ```formIdName```: html id for the form
+* ```inputIdName```: html id for the user's input
+* ```loadSpinnerVisible```: class for the loadSpinner
+
+
+```javascript
+$(function(){
+  var convForm = $('.my-conv-form-wrapper').convform({
+    eventList: {
+        onSubmitForm: function(convState) {
+            console.log('The form is being submitted!');
+            convState.form.submit();
+        }
+    }
+  });
+});
+```
 
 #### Stuff used to make this:
 
