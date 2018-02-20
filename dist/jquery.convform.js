@@ -6,11 +6,12 @@ function SingleConvState(input){
 SingleConvState.prototype.hasNext = function(){
     return this.next;
 };
-function ConvState(wrapper, SingleConvState, form) {
+function ConvState(wrapper, SingleConvState, form, params) {
     this.form = form;
     this.wrapper = wrapper;
     this.current = SingleConvState;
     this.answers = {};
+    this.parameters = params;
     this.scrollDown = function() {
         $(this.wrapper).find('#messages').stop().animate({scrollTop: $(this.wrapper).find('#messages')[0].scrollHeight}, 600);
     }.bind(this);
@@ -77,10 +78,10 @@ ConvState.prototype.printQuestion = function(){
                     this.printQuestion();
                 }.bind(this),200);
             } else {
-                this.form.submit();
+                this.parameters.eventList.onSubmitForm();
             }
         }
-        $(this.wrapper).find('#userInput').focus();
+        $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
     }.bind(this), 500);
 };
 ConvState.prototype.printAnswers = function(answers, multiple){
@@ -99,8 +100,8 @@ ConvState.prototype.printAnswers = function(answers, multiple){
                             this.current.input.selected.splice(indexOf, 1);
                             $(event.target).removeClass('selected');
                         }
-                        this.wrapper.find('#userInput').removeClass('error');
-                        this.wrapper.find('#userInput').val('');
+                        this.wrapper.find(this.parameters.inputIdHashTagName).removeClass('error');
+                        this.wrapper.find(this.parameters.inputIdHashTagName).val('');
                         if(this.current.input.selected.length > 0) {
                             this.wrapper.find('button.submit').addClass('glow');
                         } else {
@@ -118,8 +119,8 @@ ConvState.prototype.printAnswers = function(answers, multiple){
                     .data("answer", answers[i])
                     .click(function(event){
                         this.current.input.selected = $(event.target).data("answer").value;
-                        this.wrapper.find('#userInput').removeClass('error');
-                        this.wrapper.find('#userInput').val('');
+                        this.wrapper.find(this.parameters.inputIdHashTagName).removeClass('error');
+                        this.wrapper.find(this.parameters.inputIdHashTagName).val('');
                         this.answerWith($(event.target).data("answer").text, $(event.target).data("answer"));
                         this.wrapper.find('div.options div.option').remove();
                     }.bind(this));
@@ -161,7 +162,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
 
     var diff = $(this.wrapper).find('div.options').height();
     $(this.wrapper).find('#messages').css({paddingBottom: diff});
-    $(this.wrapper).find("#userInput").focus();
+    $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
     if (answerObject.hasOwnProperty('callback')) {
         window[answerObject.callback](this);
     }
@@ -177,13 +178,30 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             this.printQuestion();
         }.bind(this), 300);
     } else {
-        this.form.submit();
+        this.parameters.eventList.onSubmitForm();
     }
 };
 
 (function($){
-    $.fn.convform = function(placeholder){
+    $.fn.convform = function(options){
         var wrapper = this;
+
+        var parameters = $.extend(true, {}, {
+            placeHolder : 'Type Here',
+            typeInputUi : 'textarea',
+            timeOutFirstQuestion : 1600,
+            buttonClassStyle : 'icon2-arrow',
+            eventList : {
+                onSubmitForm : function() {
+                    console.log('completed');
+                    return true;
+                }
+            },
+            formIdName : 'convForm',
+            inputIdName : 'userInput',
+            loadSpinnerVisible : ''
+        }, options);
+
         /*
         * this will create an array with all inputs, selects and textareas found
         * inside the wrapper, in order of appearance
@@ -194,6 +212,8 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                 input['name'] = $(this).attr('name');
             if($(this).attr('no-answer'))
                 input['noAnswer'] = true;
+            if($(this).attr('required'))
+                input['required'] = true;
             if($(this).attr('type'))
                 input['type'] = $(this).attr('type');
             input['questions'] = $(this).attr('conv-question').split("|");
@@ -232,18 +252,29 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             //hides original form so users cant interact with it
             var form = $(wrapper).find('form').hide();
 
-            //var placeholder = 'Write here...';
-            //create a new form for user input
-            var inputForm = $('<form id="convForm"><div class="options dragscroll"></div><textarea id="userInput" rows="1" placeholder="'+placeholder+'"></textarea><button type="submit" class="icon2-arrow submit">⯈</button><span class="clear"></span></form>');
+            var inputForm;
+            parameters.inputIdHashTagName = '#' + parameters.inputIdName;
 
-            //appends messages wrapper and newly created form
-            $(wrapper).append('<div class="wrapper-messages"><div id="messages"></div></div>');
+            switch(parameters.typeInputUi) {
+                case 'input':
+                    inputForm = $('<form id="' + parameters.formIdName + '"><div class="options dragscroll"></div><input id="' + parameters.inputIdName + '" type="text" placeholder="'+ parameters.placeHolder +'"></><button type="submit" class="submit">⯈</button><span class="clear"></span></form>');
+                    break;
+                case 'textarea':
+                    inputForm = $('<form id="' + parameters.formIdName + '"><div class="options dragscroll"></div><textarea id="' + parameters.inputIdName + '" rows="1" placeholder="'+ parameters.placeHolder +'"></textarea><button type="submit" class="submit">⯈</button><span class="clear"></span></form>');
+                    break;
+                default :
+                    console.log('typeInputUi must be input or textarea');
+                    return false;
+            }
+
+            //appends messages wrapper and newly created form with the spinner load
+            $(wrapper).append('<div class="wrapper-messages"><div class="spinLoader ' + parameters.loadSpinnerVisible + ' "></div><div id="messages"></div></div>');
             $(wrapper).append(inputForm);
 
             //creates new single state with first input
             var singleState = new SingleConvState(inputs[0]);
             //creates new wrapper state with first singlestate as current and gives access to wrapper element
-            var state = new ConvState(wrapper, singleState, form);
+            var state = new ConvState(wrapper, singleState, form, parameters);
             //creates all new single states with inputs in order
             for(var i in inputs) {
                 if(i != 0 && inputs.hasOwnProperty(i)){
@@ -253,22 +284,30 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             }
 
             //prints first question
-            state.printQuestion();
+            setTimeout(function() {
+                $.when($('div.spinLoader').addClass('hidden')).done(function() {
+                    state.printQuestion();
+                });
+            }, parameters.timeOutFirstQuestion);
 
             //binds enter to answer submit and change event to search for select possible answers
-            $(inputForm).find("#userInput").keypress(function(e){
+            $(inputForm).find(parameters.inputIdHashTagName).keypress(function(e){
                 if(e.which == 13) {
                     var input = $(this).val();
                     e.preventDefault();
                     if(state.current.input.type=="select" && !state.current.input.multiple){
-                        var results = state.current.input.answers.filter(function(el){
-                            return el.text.toLowerCase().indexOf(input.toLowerCase()) != -1;
-                        });
-                        if(results.length){
-                            state.current.input.selected = results[0];
-                            $(this).parent('form').submit();
+                        if(state.current.input.required) {
+                            state.wrapper.find('#userInputBot').addClass('error');
                         } else {
-                            state.wrapper.find('#userInput').addClass('error');
+                            var results = state.current.input.answers.filter(function (el) {
+                                return el.text.toLowerCase().indexOf(input.toLowerCase()) != -1;
+                            });
+                            if (results.length) {
+                                state.current.input.selected = results[0];
+                                $(this).parent('form').submit();
+                            } else {
+                                state.wrapper.find(parameters.inputIdHashTagName).addClass('error');
+                            }
                         }
                     } else if(state.current.input.type=="select" && state.current.input.multiple) {
                         if(input.trim() != "") {
@@ -278,12 +317,12 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                             if(results.length){
                                 if(state.current.input.selected.indexOf(results[0].value) == -1){
                                     state.current.input.selected.push(results[0].value);
-                                    state.wrapper.find('#userInput').val("");
+                                    state.wrapper.find(parameters.inputIdHashTagName).val("");
                                 } else {
-                                    state.wrapper.find('#userInput').val("");
+                                    state.wrapper.find(parameters.inputIdHashTagName).val("");
                                 }
                             } else {
-                                state.wrapper.find('#userInput').addClass('error');
+                                state.wrapper.find(parameters.inputIdHashTagName).addClass('error');
                             }
                         } else {
                             if(state.current.input.selected.length) {
@@ -291,14 +330,14 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                             }
                         }
                     } else {
-                        if(input.trim()!='' && !state.wrapper.find('#userInput').hasClass("error")) {
+                        if(input.trim()!='' && !state.wrapper.find(parameters.inputIdHashTagName).hasClass("error")) {
                             $(this).parent('form').submit();
                         } else {
-                            $(state.wrapper).find('#userInput').focus();
+                            $(state.wrapper).find(parameters.inputIdHashTagName).focus();
                         }
                     }
                 }
-                autosize.update($(state.wrapper).find('#userInput'));
+                autosize.update($(state.wrapper).find(parameters.inputIdHashTagName));
             }).on('input', function(e){
                 if(state.current.input.type=="select"){
                     var input = $(this).val();
@@ -306,71 +345,79 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                         return el.text.toLowerCase().indexOf(input.toLowerCase()) != -1;
                     });
                     if(results.length){
-                        state.wrapper.find('#userInput').removeClass('error');
+                        state.wrapper.find(parameters.inputIdHashTagName).removeClass('error');
                         state.printAnswers(results, state.current.input.multiple);
                     } else {
-                        state.wrapper.find('#userInput').addClass('error');
+                        state.wrapper.find(parameters.inputIdHashTagName).addClass('error');
                     }
                 } else if(state.current.input.hasOwnProperty('pattern')) {
                     var reg = new RegExp(state.current.input.pattern, 'i');
                     if(reg.test($(this).val())) {
-                        state.wrapper.find('#userInput').removeClass('error');
+                        state.wrapper.find(parameters.inputIdHashTagName).removeClass('error');
                     } else {
-                        state.wrapper.find('#userInput').addClass('error');
+                        state.wrapper.find(parameters.inputIdHashTagName).addClass('error');
                     }
                 }
             });
 
             $(inputForm).find('button.submit').click(function(e){
-                var input = $(state.wrapper).find('#userInput').val();
+                var input = $(state.wrapper).find(parameters.inputIdHashTagName).val();
                 e.preventDefault();
                 if(state.current.input.type=="select" && !state.current.input.multiple){
-                    if(input == 'Escreva aqui...') input = '';
-                    var results = state.current.input.answers.filter(function(el){
-                        return el.text.toLowerCase().indexOf(input.toLowerCase()) != -1;
-                    });
-                    if(results.length){
-                        state.current.input.selected = results[0];
-                        $(this).parent('form').submit();
+                    if(state.current.input.required) {
+                        return false;
                     } else {
-                        state.wrapper.find('#userInput').addClass('error');
-                    }
-                } else if(state.current.input.type=="select" && state.current.input.multiple) {
-                    if(input.trim() != "" && input != 'Escreva aqui...') {
-                        var results = state.current.input.answers.filter(function(el){
+                        if (input == parameters.placeHolder) input = '';
+                        var results = state.current.input.answers.filter(function (el) {
                             return el.text.toLowerCase().indexOf(input.toLowerCase()) != -1;
                         });
-                        if(results.length){
-                            if(state.current.input.selected.indexOf(results[0].value) == -1){
-                                state.current.input.selected.push(results[0].value);
-                                state.wrapper.find('#userInput').val("");
+                        if (results.length) {
+                            state.current.input.selected = results[0];
+                            $(this).parent('form').submit();
+                        } else {
+                            state.wrapper.find(parameters.inputIdHashTagName).addClass('error');
+                        }
+                    }
+                } else if(state.current.input.type=="select" && state.current.input.multiple) {
+                    if(state.current.input.required) {
+                        return false;
+                    } else {
+                        if (input.trim() != "" && input != parameters.placeHolder) {
+                            var results = state.current.input.answers.filter(function (el) {
+                                return el.text.toLowerCase().indexOf(input.toLowerCase()) != -1;
+                            });
+                            if (results.length) {
+                                if (state.current.input.selected.indexOf(results[0].value) == -1) {
+                                    state.current.input.selected.push(results[0].value);
+                                    state.wrapper.find(parameters.inputIdHashTagName).val("");
+                                } else {
+                                    state.wrapper.find(parameters.inputIdHashTagName).val("");
+                                }
                             } else {
-                                state.wrapper.find('#userInput').val("");
+                                state.wrapper.find(parameters.inputIdHashTagName).addClass('error');
                             }
                         } else {
-                            state.wrapper.find('#userInput').addClass('error');
-                        }
-                    } else {
-                        if(state.current.input.selected.length) {
-                            $(this).removeClass('glow');
-                            $(this).parent('form').submit();
+                            if (state.current.input.selected.length) {
+                                $(this).removeClass('glow');
+                                $(this).parent('form').submit();
+                            }
                         }
                     }
                 } else {
-                    if(input.trim() != '' && !state.wrapper.find('#userInput').hasClass("error")){
+                    if(input.trim() != '' && !state.wrapper.find(parameters.inputIdHashTagName).hasClass("error")){
                         $(this).parent('form').submit();
                     } else {
-                        $(state.wrapper).find('#userInput').focus();
+                        $(state.wrapper).find(parameters.inputIdHashTagName).focus();
                     }
                 }
-                autosize.update($(state.wrapper).find('#userInput'));
+                autosize.update($(state.wrapper).find(parameters.inputIdHashTagName));
             });
 
             //binds form submit to state functions
             $(inputForm).submit(function(e){
                 e.preventDefault();
-                var answer = $(this).find('#userInput').val();
-                $(this).find('#userInput').val("");
+                var answer = $(this).find(parameters.inputIdHashTagName).val();
+                $(this).find(parameters.inputIdHashTagName).val("");
                 if(state.current.input.type == 'select'){
                     if(!state.current.input.multiple){
                         state.answerWith(state.current.input.selected.text, state.current.input.selected);
@@ -384,7 +431,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
 
 
             if(typeof autosize == 'function') {
-                $textarea = $(state.wrapper).find('#userInput');
+                $textarea = $(state.wrapper).find(parameters.inputIdHashTagName);
                 autosize($textarea);
             }
 

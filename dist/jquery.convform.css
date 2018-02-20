@@ -87,7 +87,24 @@ form#convForm {
     position: relative;
     box-shadow: 0 0 5px 5px rgba(222, 222, 222, 0.4);
 }
+
 form#convForm textarea#userInput {
+    border: none;
+    padding: 7px 10px;
+    outline: none;
+    font-size: 0.905rem;
+    float: left;
+    width: calc(100% - 70px);
+    line-height: 1.3em;
+    min-height: 1.7em;
+    max-height: 10rem;
+    display: block;
+    max-width: 88%;
+    margin-right: 2.5%;
+}
+
+
+form#convForm input#userInput {
     border: none;
     padding: 7px 10px;
     outline: none;
@@ -252,6 +269,7 @@ div#chat div.options div.option.selected {
 div#chat div.options div.option.selected:hover {
     background: #069c7f;
 }
+
 #convForm button.submit {
     padding: 3px;
     border: none;
@@ -267,6 +285,8 @@ div#chat div.options div.option.selected:hover {
     background: #fff;
     outline: none !important;
 }
+
+
 #convForm button.submit:hover {
     background: #06b79a;
     color: #fff;
@@ -290,3 +310,66 @@ span.clear {
     display: block;
     clear: both;
 }
+
+.spinLoader,
+.spinLoader:before,
+.spinLoader:after {
+    background: rgba(0,96,127,0.8) !important;
+    -webkit-animation: spinLoaderChat 1s infinite ease-in-out;
+    animation: spinLoaderChat 1s infinite ease-in-out;
+    width: 1em;
+    height: 4em;
+}
+.spinLoader {
+    color: rgba(0,96,127,0.8) !important;
+    text-indent: -9999em;
+    margin: 50% auto;
+    position: relative;
+    font-size: 11px;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation-delay: -0.16s;
+    animation-delay: -0.16s;
+}
+.spinLoader:before,
+.spinLoader:after {
+    position: absolute;
+    top: 0;
+    content: '';
+}
+.spinLoader:before {
+    left: -1.5em;
+    -webkit-animation-delay: -0.32s;
+    animation-delay: -0.32s;
+}
+.spinLoader:after {
+    left: 1.5em;
+}
+@-webkit-keyframes spinLoaderChat {
+    0%,
+    80%,
+    100% {
+        box-shadow: 0 0;
+        height: 4em;
+    }
+    40% {
+        box-shadow: 0 -2em;
+        height: 5em;
+    }
+}
+@keyframes spinLoaderChat {
+    0%,
+    80%,
+    100% {
+        box-shadow: 0 0;
+        height: 4em;
+    }
+    40% {
+        box-shadow: 0 -2em;
+        height: 5em;
+    }
+}
+
+
+
