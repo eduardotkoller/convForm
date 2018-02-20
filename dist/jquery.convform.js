@@ -189,7 +189,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
         var parameters = $.extend(true, {}, {
             placeHolder : 'Type Here',
             typeInputUi : 'textarea',
-            timeOutFirstQuestion : 1600,
+            timeOutFirstQuestion : 1200,
             buttonClassStyle : 'icon2-arrow',
             eventList : {
                 onSubmitForm : function(convState) {

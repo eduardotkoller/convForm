@@ -231,7 +231,7 @@ div#chat.conv-form-wrapper  div#messages div.message {
     font-size: 0.905rem;
     color: #333;
     display: inline-block;
-    padding: 10px 15px 12px;
+    padding: 10px 15px 8px;
     border-radius: 20px;
     margin-bottom: 5px;
     float: right;
@@ -248,6 +248,7 @@ div#chat.conv-form-wrapper  div#messages div.message.to {
 div#chat.conv-form-wrapper div#messages div.message.from {
     background: #06b79a;
     color: #fff;
+    border-top-right-radius: 0;
 }
 .message.to+.message.from, .message.from+.message.to {
     margin-top: 15px;
@@ -325,14 +326,14 @@ span.clear {
 .spinLoader,
 .spinLoader:before,
 .spinLoader:after {
-    background: rgba(0,96,127,0.8) !important;
+    background: #06c5a6 !important;
     -webkit-animation: spinLoaderChat 1s infinite ease-in-out;
     animation: spinLoaderChat 1s infinite ease-in-out;
     width: 1em;
     height: 4em;
 }
 .spinLoader {
-    color: rgba(0,96,127,0.8) !important;
+    color: #06c5a6 !important;
     text-indent: -9999em;
     margin: 50% auto;
     position: relative;
@@ -381,6 +382,3 @@ span.clear {
         height: 5em;
     }
 }
-
-
-
