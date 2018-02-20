@@ -117,4 +117,3 @@ You can use custom functions to be called when a user clicks on an answer from a
 #### Stuff used to make this:
 
 * [Jack Moore's autosize plugin](https://github.com/jackmoore/autosize), used to autoresize the user input
-* [Dragscroll](https://github.com/asvd/dragscroll), not required, used so the user can dragscroll the options on an answer
