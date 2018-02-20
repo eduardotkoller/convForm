@@ -80,7 +80,7 @@
     }
 }
 
-form#convForm {
+form.convFormDynamic {
     width: calc(100% - 33px);
     margin: 10px auto 15px;
     padding: 0 !important;
@@ -88,7 +88,7 @@ form#convForm {
     box-shadow: 0 0 5px 5px rgba(222, 222, 222, 0.4);
 }
 
-form#convForm textarea#userInput {
+form.convFormDynamic textarea.userInputDynamic {
     border: none;
     padding: 7px 10px;
     outline: none;
@@ -104,7 +104,7 @@ form#convForm textarea#userInput {
 }
 
 
-form#convForm input#userInput {
+form.convFormDynamic input.userInputDynamic {
     border: none;
     padding: 7px 10px;
     outline: none;
@@ -162,13 +162,23 @@ div#chat div.wrapper-messages::-webkit-scrollbar, div#feed ul::-webkit-scrollbar
     background: transparent;
     /* optional: just make scrollbar invisible */
 }
-#userInput.error {
+input[type="text"].userInputDynamic.error {
     color: #ac0000 !important;
 }
-#userInput {
+input[type="text"].userInputDynamic {
     border-radius: 3px;
     margin: 7px 10px;
 }
+
+textarea.userInputDynamic.error {
+    color: #ac0000 !important;
+}
+
+textarea.userInputDynamic {
+    border-radius: 3px;
+    margin: 7px 10px;
+}
+
 div#chat.conv-form-wrapper div#messages {
     transition: bottom 0.15s, padding-bottom 0.15s;
     position: absolute;
@@ -270,7 +280,7 @@ div#chat div.options div.option.selected:hover {
     background: #069c7f;
 }
 
-#convForm button.submit {
+form.convFormDynamic button.submit {
     padding: 3px;
     border: none;
     float: left;
@@ -287,10 +297,11 @@ div#chat div.options div.option.selected:hover {
 }
 
 
-#convForm button.submit:hover {
+form.convFormDynamic button.submit:hover {
     background: #06b79a;
     color: #fff;
 }
+
 button.submit.glow {
     box-shadow: 0 0 10px 5px rgba(6, 197, 166, 0.4);
 }
