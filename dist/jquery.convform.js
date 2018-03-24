@@ -153,6 +153,8 @@ ConvState.prototype.stopRepeat = function() {
         this.current.next = this.originalState;
     }
     this.isRepeatingIdx = 0;
+    this.rollbackTo = false;
+    this.originalState = false;
     this.isRepeating = false;
 };
 
