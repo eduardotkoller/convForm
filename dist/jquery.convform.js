@@ -200,6 +200,10 @@ ConvState.prototype.printAnswers = function(answers, multiple){
         }
     }
     var diff = $(this.wrapper).find('div.options').height();
+    if(diff > this.parameters.maxOptionsDivHeightThreadHold) {
+        diff = this.parameters.maxOptionsDivHeight;
+        $(this.wrapper).find('div.options').css('max-height', this.parameters.maxOptionsDivHeight);
+    }
     $(this.wrapper).find('#messages').css({paddingBottom: diff});
 
 };
@@ -292,7 +296,9 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             formIdName : 'convForm',
             inputIdName : 'userInput',
             loadSpinnerVisible : '',
-            buttonText: '▶'
+            buttonText: '▶',
+            maxOptionsDivHeightThreadHold : 200,
+            maxOptionsDivHeight : '196px'
         }, options);
 
         /*
