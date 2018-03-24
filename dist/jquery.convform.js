@@ -149,7 +149,9 @@ ConvState.prototype.startRepeat = function() {
 };
 
 ConvState.prototype.stopRepeat = function() {
-    this.current.next = this.originalState;
+    if(this.originalState!=false) {
+        this.current.next = this.originalState;
+    }
     this.isRepeating = false;
 };
 
