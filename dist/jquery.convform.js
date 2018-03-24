@@ -1,3 +1,27 @@
+// This function correct a bug in the "clone()" function on the select and text area elements. This is needed for line 255.
+// Source : https://github.com/spencertipping/jquery.fix.clone
+
+
+(function (original) {
+    jQuery.fn.clone = function () {
+        var result           = original.apply(this, arguments),
+            my_textareas     = this.find('textarea').add(this.filter('textarea')),
+            result_textareas = result.find('textarea').add(result.filter('textarea')),
+            my_selects       = this.find('select').add(this.filter('select')),
+            result_selects   = result.find('select').add(result.filter('select'));
+
+        for (var i = 0, l = my_textareas.length; i < l; ++i) $(result_textareas[i]).val($(my_textareas[i]).val());
+        for (var i = 0, l = my_selects.length;   i < l; ++i) {
+            for (var j = 0, m = my_selects[i].options.length; j < m; ++j) {
+                if (my_selects[i].options[j].selected === true) {
+                    result_selects[i].options[j].selected = true;
+                }
+            }
+        }
+        return result;
+    };
+}) (jQuery.fn.clone);
+
 function SingleConvState(input){
     this.input = input;
     this.next = false;
@@ -6,12 +30,18 @@ function SingleConvState(input){
 SingleConvState.prototype.hasNext = function(){
     return this.next;
 };
+
 function ConvState(wrapper, SingleConvState, form, params) {
     this.form = form;
     this.wrapper = wrapper;
     this.current = SingleConvState;
     this.answers = {};
     this.parameters = params;
+    this.rollbackTo = false;
+    this.originalState = false;
+    this.isRepeating = false;
+    this.isRepeatingIdx = 0;
+    //this.isRepeatingCounter = 0;
     this.scrollDown = function() {
         $(this.wrapper).find('#messages').stop().animate({scrollTop: $(this.wrapper).find('#messages')[0].scrollHeight}, 600);
     }.bind(this);
@@ -20,8 +50,22 @@ ConvState.prototype.next = function(){
     if(this.current.input.hasOwnProperty('callback')) {
         window[this.current.input.callback](this);
     }
+
     if(this.current.hasNext()){
         this.current = this.current.next;
+
+        if(this.current.input['conv-save']) {
+            this.saveState(this.current);
+        }
+
+        if(this.isRepeating) {
+            var itemToReplace = this.current.input.name.match(/\[.*?\]/g);
+            if(itemToReplace) {
+                this.current.input.name = this.current.input.name.replace(itemToReplace[0],'[' + this.isRepeatingIdx + ']');
+            };
+        }
+
+
         if(this.current.input.hasOwnProperty('fork') && this.current.input.hasOwnProperty('case')){
             if(this.answers.hasOwnProperty(this.current.input.fork) && this.answers[this.current.input.fork].value != this.current.input.case) {
                 return this.next();
@@ -60,7 +104,9 @@ ConvState.prototype.printQuestion = function(){
             }
         }
     }
+
     var messageObj = $('<div class="message to typing"><div class="typing_loader"></div></div>');
+
     setTimeout(function(){
         $(this.wrapper).find('#messages').append(messageObj);
         this.scrollDown();
@@ -84,8 +130,32 @@ ConvState.prototype.printQuestion = function(){
         $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
     }.bind(this), 500);
 };
+
+ConvState.prototype.saveState = function(objConvState) {
+    if(!this.isRepeating) {
+        if(this.rollbackTo==false) {
+            this.rollbackTo = jQuery.extend(true, {}, objConvState);
+            this.isRepeating = true;
+        }
+    }
+};
+
+ConvState.prototype.startRepeat = function() {
+        this.isRepeatingIdx++;
+        if(this.originalState==false) {
+            this.originalState = this.current.next;
+        }
+        this.current.next = this.rollbackTo;
+};
+
+ConvState.prototype.stopRepeat = function() {
+    this.current.next = this.originalState;
+    this.isRepeating = false;
+};
+
 ConvState.prototype.printAnswers = function(answers, multiple){
     this.wrapper.find('div.options div.option').remove();
+
     if(multiple){
         for(var i in answers){
             if(answers.hasOwnProperty(i)){
@@ -133,13 +203,15 @@ ConvState.prototype.printAnswers = function(answers, multiple){
     $(this.wrapper).find('#messages').css({paddingBottom: diff});
 
 };
+
 ConvState.prototype.answerWith = function(answerText, answerObject) {
-    //console.log('previous answer: ', answerObject);
-    //puts answer inside answers array to give questions access to previous answers
+
     if(this.current.input.hasOwnProperty('name')){
         if(typeof answerObject == 'string') {
             if(this.current.input.type == 'tel')
                 answerObject = answerObject.replace(/\s|\(|\)|-/g, "");
+
+
             this.answers[this.current.input.name] = {text: answerText, value: answerObject};
             //console.log('previous answer: ', answerObject);
         } else {
@@ -163,15 +235,34 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
     var diff = $(this.wrapper).find('div.options').height();
     $(this.wrapper).find('#messages').css({paddingBottom: diff});
     $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
+
     if (answerObject.hasOwnProperty('callback')) {
         window[answerObject.callback](this);
     }
+
+
     setTimeout(function(){
         $(this.wrapper).find("#messages").append(message);
         this.scrollDown();
     }.bind(this), 300);
 
-    $(this.form).append(this.current.input.element);
+    if(this.isRepeating) {
+        // if using directly $(this.form).append(this.current.input.element), the new "repeated element" is replaced, not added.
+        // The values will be visible in "answers" array, but not when the form is submitted as an element. To solve the issue, the element is cloned and the name is set properly using the one define in the this.current.input array.
+        var clonedElement = $(this.current.input.element).clone().attr('name', this.current.input.name);
+        $(this.form).append(clonedElement);
+    } else {
+        $(this.form).append(this.current.input.element);
+    }
+
+    if (answerObject['start-repeat']) {
+        this.startRepeat();
+    }
+
+    if (answerObject['stop-repeat']) {
+        this.stopRepeat();
+    }
+
     //goes to next state and prints question
     if(this.next()){
         setTimeout(function(){
@@ -212,6 +303,10 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             var input = {};
             if($(this).attr('name'))
                 input['name'] = $(this).attr('name');
+
+            if($(this).attr('conv-initiate-repeat')) {
+                input['conv-save'] = true;
+            }
             if($(this).attr('no-answer'))
                 input['noAnswer'] = true;
             if($(this).attr('required'))
@@ -229,6 +324,15 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                     var answer = {};
                     answer['text'] = $(this).text();
                     answer['value'] = $(this).val();
+
+                    if($(this).attr('conv-start-repeat')) {
+                        answer['start-repeat'] = true;
+                    }
+
+                    if($(this).attr('conv-stop-repeat')) {
+                        answer['stop-repeat'] = true;
+                    }
+
                     if($(this).attr('callback'))
                         answer['callback'] = $(this).attr('callback');
                     return answer;
@@ -444,8 +548,8 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
     }
 })( jQuery );
 
-$(function(){
+//$(function(){
     //instantiate conversation form on .conv-form-wrapper (default class for plugin);
-    var convForm = $('.conv-form-wrapper').convform();
-    console.log(convForm);
-});
+//    var convForm = $('.conv-form-wrapper').convform();
+//    console.log(convForm);
+//});
