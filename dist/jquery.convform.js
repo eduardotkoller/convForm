@@ -212,25 +212,25 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             var input = {};
             if($(this).attr('name'))
                 input['name'] = $(this).attr('name');
-            if($(this).attr('no-answer'))
+            if($(this).attr('data-no-answer'))
                 input['noAnswer'] = true;
             if($(this).attr('required'))
                 input['required'] = true;
             if($(this).attr('type'))
                 input['type'] = $(this).attr('type');
-            input['questions'] = $(this).attr('conv-question').split("|");
-            if($(this).attr('pattern'))
-                input['pattern'] = $(this).attr('pattern');
-            if($(this).attr('callback'))
-                input['callback'] = $(this).attr('callback');
+            input['questions'] = $(this).attr('data-conv-question').split("|");
+            if($(this).attr('data-pattern'))
+                input['pattern'] = $(this).attr('data-pattern');
+            if($(this).attr('data-callback'))
+                input['callback'] = $(this).attr('data-callback');
             if($(this).is('select')) {
                 input['type'] = 'select';
                 input['answers'] = $(this).find('option').map(function(){
                     var answer = {};
                     answer['text'] = $(this).text();
                     answer['value'] = $(this).val();
-                    if($(this).attr('callback'))
-                        answer['callback'] = $(this).attr('callback');
+                    if($(this).attr('data-callback'))
+                        answer['callback'] = $(this).attr('data-callback');
                     return answer;
                 }).get();
                 if($(this).prop('multiple')){
@@ -241,9 +241,9 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                     input['selected'] = "";
                 }
             }
-            if($(this).parent('div[conv-case]').length) {
-                input['case'] = $(this).parent('div[conv-case]').attr('conv-case');
-                input['fork'] = $(this).parent('div[conv-case]').parent('div[conv-fork]').attr('conv-fork');
+            if($(this).parent('div[data-conv-case]').length) {
+                input['case'] = $(this).parent('div[data-conv-case]').attr('data-conv-case');
+                input['fork'] = $(this).parent('div[data-conv-case]').parent('div[data-conv-fork]').attr('data-conv-fork');
             }
             input['element'] = this;
             $(this).detach();
