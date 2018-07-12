@@ -119,26 +119,26 @@ form.convFormDynamic input.userInputDynamic {
     margin-right: 2.5%;
 }
 
-div#chat.conv-form-wrapper div#messages {
+div.conv-form-wrapper div#messages {
     max-height: 71vh;
     height: auto !important;
     overflow-y: scroll;
 }
-div#chat.conv-form-wrapper div#messages:after {
+div.conv-form-wrapper div#messages:after {
     content: '';
     display: table;
     clear: both;
 }
-div#chat.conv-form-wrapper {
+div.conv-form-wrapper {
     position: relative;
 }
-div#chat.conv-form-wrapper div.wrapper-messages {
+div.conv-form-wrapper div.wrapper-messages {
     position: relative;
     height: 577px;
     max-height: 71vh;
     overflow-y: scroll;
 }
-div#chat:before {
+div.conv-form-wrapper:before {
     content: '';
     position: absolute;
     width: 100%;
@@ -150,12 +150,12 @@ div#chat:before {
     background: linear-gradient(#fff, transparent);
 }
 @media (max-width: 767px) {
-    div#chat.conv-form-wrapper div.wrapper-messages, div#chat.conv-form-wrapper div#messages {
+    div.conv-form-wrapper div.wrapper-messages, div.conv-form-wrapper div#messages {
         max-height: 71vh;
     }
 }
 
-div#chat div.wrapper-messages::-webkit-scrollbar, div#feed ul::-webkit-scrollbar, div#chat div.options::-webkit-scrollbar {
+div.conv-form-wrapper div.wrapper-messages::-webkit-scrollbar, div#feed ul::-webkit-scrollbar, div.conv-form-wrapper div.options::-webkit-scrollbar {
     width: 0px;
     height: 0px;
     /* remove scrollbar space */
@@ -179,7 +179,7 @@ textarea.userInputDynamic {
     margin: 7px 10px;
 }
 
-div#chat.conv-form-wrapper div#messages {
+div.conv-form-wrapper div#messages {
     transition: bottom 0.15s, padding-bottom 0.15s;
     position: absolute;
     bottom: 0;
@@ -188,7 +188,7 @@ div#chat.conv-form-wrapper div#messages {
     padding-bottom: 20px;
     /*max-height: 71vh;*/
 }
-div#chat div.options {
+div.conv-form-wrapper div.options {
     word-wrap: normal;
     white-space: nowrap;
     overflow-x: scroll;
@@ -197,12 +197,12 @@ div#chat div.options {
     width: 100%;
     transform: translateY(-5px);
 }
-div#chat div.options:after {
+div.conv-form-wrapper div.options:after {
     content: '';
     display: table;
     clear: both;
 }
-div#chat div.options div.option {
+div.conv-form-wrapper div.options div.option {
     padding: 7px 12px;
     border: 1px solid rgba(6,153,184,0.3);
     display: inline-block;
@@ -213,19 +213,19 @@ div#chat div.options div.option {
     border-radius: 20px;
     font-size: 0.9rem;
 }
-div#chat.conv-form-wrapper div.message {
+div.conv-form-wrapper div.message {
     animation: slideTop 0.15s ease;
 }
-div#chat.conv-form-wrapper div.message:after {
+div.conv-form-wrapper div.message:after {
     content: '';
     display: table;
     clear: both;
 }
-div#chat.conv-form-wrapper  div.message.ready {
+div.conv-form-wrapper  div.message.ready {
     animation: bounceIn 0.2s ease;
     transform-origin: 0 0 0;
 }
-div#chat.conv-form-wrapper  div#messages div.message {
+div.conv-form-wrapper  div#messages div.message {
     border-radius: 20px;
     padding: 12px 22px;
     font-size: 0.905rem;
@@ -239,13 +239,13 @@ div#chat.conv-form-wrapper  div#messages div.message {
     max-width: 65%;
     word-wrap: break-word;
 }
-div#chat.conv-form-wrapper  div#messages div.message.to {
+div.conv-form-wrapper  div#messages div.message.to {
     background: #efefef;
     color: #6f6f6f;
     float: left;
     border-top-left-radius: 0;
 }
-div#chat.conv-form-wrapper div#messages div.message.from {
+div.conv-form-wrapper div#messages div.message.from {
     background: #06b79a;
     color: #fff;
     border-top-right-radius: 0;
@@ -270,14 +270,14 @@ div#chat.conv-form-wrapper div#messages div.message.from {
         transform: scale(1.0, 1.0);
     }
 }
-div#chat div.options div.option:hover {
+div.conv-form-wrapper div.options div.option:hover {
     background: #eeeeee;
 }
-div#chat div.options div.option.selected {
+div.conv-form-wrapper div.options div.option.selected {
     background: #06b79a;
     color: #fff;
 }
-div#chat div.options div.option.selected:hover {
+div.conv-form-wrapper div.options div.option.selected:hover {
     background: #069c7f;
 }
 
@@ -312,7 +312,7 @@ button.submit.glow {
 .dragscroll {
     cursor: grab;
 }
-div#chat div#messages::-webkit-scrollbar, div#feed ul::-webkit-scrollbar {
+div.conv-form-wrapper div#messages::-webkit-scrollbar, div#feed ul::-webkit-scrollbar {
     width: 0px;
     /* remove scrollbar space */
     background: transparent;

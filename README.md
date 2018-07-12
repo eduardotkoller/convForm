@@ -12,8 +12,9 @@ Features:
 * Fork conversation based on answer
 * Access previous answers to use on questions
 * Messages that doesn't expect answer
+* Dynamically create new questions (like using an API)! [Demo](https://eduardotkoller.github.io/convForm/api_example.html) - please see the example code inside the html to understand how it works
 
-To build the chat, just wrap the form inside an element, and call .convform() on it's jquery selector. The function requires a placeholder for the user input.
+To build the chat, just wrap the form inside an element, and call .convform() on it's jquery selector.
 
 Example:
 
@@ -120,7 +121,7 @@ You can add an options object as a parameter to the convForm function, containin
 * ```typeInputUi```: 'input' or 'textarea', to choose the type of the html element to use as the user's input
 * ```timeOutFirstQuestion```: time in ms as the duration for the load-up animation before the first question
 * ```buttonClassStyle```: class for the user's submit answer button
-* ```eventList```: an object with functions to be called at specific times, the only supported at the moment is ```onSubmitForm```, and the function is called with the convState as a parameter.
+* ```eventList```: an object with functions to be called at specific times, the only supported at the moment are ```onSubmitForm``` (function is called with the convState as a parameter) and ```onInputSubmit``` (function called with the convState as the first parameter, and a ready callback function to print the next question as the second parameter)
 * ```formIdName```: html id for the form
 * ```inputIdName```: html id for the user's input
 * ```loadSpinnerVisible```: class for the loadSpinner

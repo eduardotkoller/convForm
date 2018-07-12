@@ -18,7 +18,7 @@
 	                    <div class="card no-border">
 	                        <div id="chat" class="conv-form-wrapper">
 	                            <form action="" method="GET" class="hidden">
-	                                <select data-conv-question="Hello! I'm a bot created from a HTML form. Can I show you some features? (this question comes from a select)">
+	                                <select data-conv-question="Hello! I'm a bot created from a HTML form. Can I show you some features? (this question comes from a select)" name="first-question">
 	                                    <option value="yes">Yes</option>
 	                                    <option value="sure">Sure!</option>
 	                                </select>
@@ -103,6 +103,12 @@
 				console.log('changed current.next to originalState');
 			}
 		}
+	</script>
+	<script>
+		jQuery(function($){
+			var convForm = $('#chat').convform();
+			console.log(convForm);
+		});
 	</script>
 </body>
 </html>

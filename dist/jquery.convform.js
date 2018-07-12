@@ -1,8 +1,9 @@
 function SingleConvState(input){
     this.input = input;
+    this.answer = '';
     this.next = false;
     return this;
-}
+};
 SingleConvState.prototype.hasNext = function(){
     return this.next;
 };
@@ -15,7 +16,21 @@ function ConvState(wrapper, SingleConvState, form, params) {
     this.scrollDown = function() {
         $(this.wrapper).find('#messages').stop().animate({scrollTop: $(this.wrapper).find('#messages')[0].scrollHeight}, 600);
     }.bind(this);
-}
+};
+ConvState.prototype.newState = function(options) {
+    var input = $.extend(true, {}, {
+        name: '',
+        noAnswer: false,
+        required: true,
+        questions: ['You forgot the question!'],
+        type: 'text',
+        multiple: false,
+        selected: "",
+        answers: []
+    }, options);
+    input.element = $('<input type="text" name="'+input.name+'"/>');
+    return new SingleConvState(input);
+};
 ConvState.prototype.next = function(){
     if(this.current.input.hasOwnProperty('callback')) {
         window[this.current.input.callback](this);
@@ -60,11 +75,7 @@ ConvState.prototype.printQuestion = function(){
             }
         }
     }
-    var messageObj = $('<div class="message to typing"><div class="typing_loader"></div></div>');
-    setTimeout(function(){
-        $(this.wrapper).find('#messages').append(messageObj);
-        this.scrollDown();
-    }.bind(this), 100);
+    var messageObj = $(this.wrapper).find('.message.typing');
     setTimeout(function(){
         messageObj.html(question);
         messageObj.removeClass('typing').addClass('ready');
@@ -72,9 +83,12 @@ ConvState.prototype.printQuestion = function(){
             this.printAnswers(this.current.input.answers, this.current.input.multiple);
         }
         this.scrollDown();
-        if(this.current.input.hasOwnProperty('noAnswer')) {
+        if(this.current.input.hasOwnProperty('noAnswer') && this.current.input.noAnswer===true) {
             if(this.next()){
                 setTimeout(function(){
+                    var messageObj = $('<div class="message to typing"><div class="typing_loader"></div></div>');
+                    $(this.wrapper).find('#messages').append(messageObj);
+                    this.scrollDown();
                     this.printQuestion();
                 }.bind(this),200);
             } else {
@@ -141,9 +155,11 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             if(this.current.input.type == 'tel')
                 answerObject = answerObject.replace(/\s|\(|\)|-/g, "");
             this.answers[this.current.input.name] = {text: answerText, value: answerObject};
+            this.current.answer = {text: answerText, value: answerObject};
             //console.log('previous answer: ', answerObject);
         } else {
             this.answers[this.current.input.name] = answerObject;
+            this.current.answer = answerObject;
         }
         if(this.current.input.type == 'select' && !this.current.input.multiple) {
             $(this.current.input.element).val(answerObject.value).change();
@@ -169,22 +185,31 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
     setTimeout(function(){
         $(this.wrapper).find("#messages").append(message);
         this.scrollDown();
-    }.bind(this), 300);
+    }.bind(this), 100);
 
     $(this.form).append(this.current.input.element);
-    //goes to next state and prints question
-    if(this.next()){
-        setTimeout(function(){
-            this.printQuestion();
-        }.bind(this), 300);
-    } else {
-        this.parameters.eventList.onSubmitForm(this);
-    }
+    var messageObj = $('<div class="message to typing"><div class="typing_loader"></div></div>');
+    setTimeout(function(){
+        $(this.wrapper).find('#messages').append(messageObj);
+        this.scrollDown();
+    }.bind(this), 150);
+
+    this.parameters.eventList.onInputSubmit(this, function(){
+        //goes to next state and prints question
+        if(this.next()){
+            setTimeout(function(){
+                this.printQuestion();
+            }.bind(this), 300);
+        } else {
+            this.parameters.eventList.onSubmitForm(this);
+        }
+    }.bind(this));
 };
 
 (function($){
     $.fn.convform = function(options){
         var wrapper = this;
+        $(this).addClass('conv-form-wrapper');
 
         var parameters = $.extend(true, {}, {
             placeHolder : 'Type Here',
@@ -196,7 +221,8 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                     console.log('completed');
                     convState.form.submit();
                     return true;
-                }
+                },
+                onInputSubmit : function(convState, readyCallback) {readyCallback()}
             },
             formIdName : 'convForm',
             inputIdName : 'userInput',
@@ -288,6 +314,9 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             //prints first question
             setTimeout(function() {
                 $.when($('div.spinLoader').addClass('hidden')).done(function() {
+                    var messageObj = $('<div class="message to typing"><div class="typing_loader"></div></div>');
+                    $(state.wrapper).find('#messages').append(messageObj);
+                    state.scrollDown();
                     state.printQuestion();
                 });
             }, parameters.timeOutFirstQuestion);
@@ -443,9 +472,3 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
         }
     }
 })( jQuery );
-
-$(function(){
-    //instantiate conversation form on .conv-form-wrapper (default class for plugin);
-    var convForm = $('.conv-form-wrapper').convform();
-    console.log(convForm);
-});
