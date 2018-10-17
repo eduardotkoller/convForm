@@ -106,6 +106,7 @@ ConvState.prototype.printAnswers = function(answers, multiple){
                 var option = $('<div class="option">'+answers[i].text+'</div>')
                     .data("answer", answers[i])
                     .click(function(event){
+                        if(!Array.isArray(this.current.input.selected)) this.current.input.selected = [];
                         var indexOf = this.current.input.selected.indexOf($(event.target).data("answer").value);
                         if(indexOf == -1){
                             this.current.input.selected.push($(event.target).data("answer").value);
@@ -395,7 +396,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                 var input = $(state.wrapper).find(parameters.inputIdHashTagName).val();
                 e.preventDefault();
                 if(state.current.input.type=="select" && !state.current.input.multiple){
-                    if(state.current.input.required) {
+                    if(state.current.input.required && !state.current.input.selected) {
                         return false;
                     } else {
                         if (input == parameters.placeHolder) input = '';
@@ -410,7 +411,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                         }
                     }
                 } else if(state.current.input.type=="select" && state.current.input.multiple) {
-                    if(state.current.input.required) {
+                    if(state.current.input.required && state.current.input.selected.length === 0) {
                         return false;
                     } else {
                         if (input.trim() != "" && input != parameters.placeHolder) {
