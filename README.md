@@ -104,14 +104,18 @@ You can use custom functions to be called when a user clicks on an answer from a
 		<option value="bing" data-callback="bing">Bing</option>
 </select>
 <script>
-	function google() {
+	function google(stateWrapper, ready) {
 		window.open("https://google.com");
+		ready();
 	}
-	function bing() {
+	function bing(stateWrapper, ready) {
 		window.open("https://bing.com");
+		ready();
 	}
 </script>
 ```
+
+Callback functions are called with parameters `stateWrapper` and a callback function `ready`. State wrapper is the convForm object, and ready is a function that you MUST call to proceed to the next question.
 
 ### Options
 
@@ -139,6 +143,8 @@ $(function(){
   });
 });
 ```
+
+Beware that the callback functions are called inside the `onInputSubmit` function. If you are changing this event function, you shouldn't need to use callback functions in the HTML tags, but if you for some reason do need them, besure to call them here using `window[convState.current.input.callback](convState, readyCallback);`
 
 ### Donate
 

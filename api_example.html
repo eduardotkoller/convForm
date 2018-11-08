@@ -48,16 +48,22 @@
 		        } else {
 					if(Array.isArray(convState.current.answer)) var answer = convState.current.answer.join(', ');
 					else var answer = convState.current.answer.text;
-		            convState.current.next = convState.newState({
-		                type: 'select',
-		                name: 'dynamic-question-'+count,
-		                questions: ['This question state was built on your previous answer (you answered: '+answer+')'],
-		                answers: [
-		                    {text: 'Answer 1', value: '1'},
-		                    {text: 'Answer 2', value: '2'},
-		                    {text: 'END', value: 'end'}
-		                ]
-		            });
+					convState.current.next = convState.newState({
+						type: 'select',
+						noAnswer: true,
+						name: 'dynamic-question-'+count,
+						questions: ['This question state was built on your previous answer (you answered: '+answer+') and doesnt expect an answer'],
+					});
+					convState.current.next.next = convState.newState({
+						type: 'select',
+						name: 'dynamic-question-'+count,
+						questions: ['This question state was built on your previous answer (you answered: '+answer+')'],
+						answers: [
+							{text: 'Answer 1', value: '1'},
+							{text: 'Answer 2', value: '2'},
+							{text: 'END', value: 'end'}
+						]
+					});
 					//emulating random response time (100-600ms)
 					setTimeout(ready, Math.random()*500+100);
 		        }

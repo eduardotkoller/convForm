@@ -32,9 +32,13 @@ ConvState.prototype.newState = function(options) {
     return new SingleConvState(input);
 };
 ConvState.prototype.next = function(){
-    if(this.current.input.hasOwnProperty('callback')) {
-        window[this.current.input.callback](this);
-    }
+    // if(this.current.input.hasOwnProperty('callback')) {
+    //     if(typeof this.current.input.callback === 'string') {
+    //         window[this.current.input.callback](this);
+    //     } else {
+    //         this.current.input.callback(this);
+    //     }
+    // }
     if(this.current.hasNext()){
         this.current = this.current.next;
         if(this.current.input.hasOwnProperty('fork') && this.current.input.hasOwnProperty('case')){
@@ -181,7 +185,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
     $(this.wrapper).find('#messages').css({paddingBottom: diff});
     $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
     if (answerObject.hasOwnProperty('callback')) {
-        window[answerObject.callback](this);
+        this.current.input['callback'] = answerObject.callback;
     }
     setTimeout(function(){
         $(this.wrapper).find("#messages").append(message);
@@ -223,7 +227,17 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
                     convState.form.submit();
                     return true;
                 },
-                onInputSubmit : function(convState, readyCallback) {readyCallback()}
+                onInputSubmit : function(convState, readyCallback) {
+                    if(convState.current.input.hasOwnProperty('callback')) {
+                        if(typeof convState.current.input.callback === 'string') {
+                            window[convState.current.input.callback](convState, readyCallback);
+                        } else {
+                            convState.current.input.callback(convState, readyCallback);
+                        }
+                    } else {
+                        readyCallback();
+                    }
+                }
             },
             formIdName : 'convForm',
             inputIdName : 'userInput',
