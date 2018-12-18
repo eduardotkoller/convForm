@@ -149,7 +149,7 @@ ConvState.prototype.printAnswers = function(answers, multiple){
         }
     }
     var diff = $(this.wrapper).find('div.options').height();
-    $(this.wrapper).find('#messages').css({paddingBottom: diff});
+    $(this.wrapper).find('.wrapper-messages').css({marginBottom: diff});
 
 };
 ConvState.prototype.answerWith = function(answerText, answerObject) {
@@ -182,7 +182,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
 
 
     var diff = $(this.wrapper).find('div.options').height();
-    $(this.wrapper).find('#messages').css({paddingBottom: diff});
+    $(this.wrapper).find('.wrapper-messages').css({marginBottom: diff});
     $(this.wrapper).find(this.parameters.inputIdHashTagName).focus();
     if (answerObject.hasOwnProperty('callback')) {
         this.current.input['callback'] = answerObject.callback;
