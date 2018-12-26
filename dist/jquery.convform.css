@@ -137,6 +137,7 @@ div.conv-form-wrapper div.wrapper-messages {
     height: 577px;
     max-height: 71vh;
     overflow-y: scroll;
+    transition: margin 0.1s;
 }
 div.conv-form-wrapper:before {
     content: '';
