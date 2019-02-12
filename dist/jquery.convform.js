@@ -111,6 +111,8 @@ ConvState.prototype.printQuestion = function(){
     }.bind(this), 500);
 };
 ConvState.prototype.printAnswers = function(answers, multiple){
+    var opened = false;
+    if(this.wrapper.find('div.options').height()!=0) opened = true;
     this.wrapper.find('div.options div.option').remove();
     if(multiple){
         for(var i in answers){
@@ -156,10 +158,12 @@ ConvState.prototype.printAnswers = function(answers, multiple){
             }
         }
     }
-    var diff = $(this.wrapper).find('div.options').height();
-    var originalHeight = $(this.wrapper).find('.wrapper-messages').height();
-    $(this.wrapper).find('.wrapper-messages').data('originalHeight', originalHeight);
-    $(this.wrapper).find('.wrapper-messages').css({marginBottom: diff, maxHeight: originalHeight-diff});
+    if(!opened) {
+        var diff = $(this.wrapper).find('div.options').height();
+        var originalHeight = $(this.wrapper).find('.wrapper-messages').height();
+        $(this.wrapper).find('.wrapper-messages').data('originalHeight', originalHeight);
+        $(this.wrapper).find('.wrapper-messages').css({marginBottom: diff, maxHeight: originalHeight-diff});
+    }
 
 };
 ConvState.prototype.answerWith = function(answerText, answerObject) {
