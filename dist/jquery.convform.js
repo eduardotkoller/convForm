@@ -7,15 +7,23 @@ function SingleConvState(input){
 SingleConvState.prototype.hasNext = function(){
     return this.next;
 };
-function ConvState(wrapper, SingleConvState, form, params) {
+function ConvState(wrapper, SingleConvState, form, params, originalFormHtml) {
     this.form = form;
     this.wrapper = wrapper;
     this.current = SingleConvState;
     this.answers = {};
     this.parameters = params;
+    this.originalFormHtml = originalFormHtml;
     this.scrollDown = function() {
         $(this.wrapper).find('#messages').stop().animate({scrollTop: $(this.wrapper).find('#messages')[0].scrollHeight}, 600);
     }.bind(this);
+};
+ConvState.prototype.destroy = function(){
+    if(this.originalFormHtml) {
+        $(this.wrapper).html(this.originalFormHtml);
+        return true;
+    }
+    return false;
 };
 ConvState.prototype.newState = function(options) {
     var input = $.extend(true, {}, {
@@ -217,6 +225,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
 (function($){
     $.fn.convform = function(options){
         var wrapper = this;
+        var originalFormHtml = $(wrapper).html();
         $(this).addClass('conv-form-wrapper');
 
         var parameters = $.extend(true, {}, {
@@ -320,7 +329,7 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             //creates new single state with first input
             var singleState = new SingleConvState(inputs[0]);
             //creates new wrapper state with first singlestate as current and gives access to wrapper element
-            var state = new ConvState(wrapper, singleState, form, parameters);
+            var state = new ConvState(wrapper, singleState, form, parameters, originalFormHtml);
             //creates all new single states with inputs in order
             for(var i in inputs) {
                 if(i != 0 && inputs.hasOwnProperty(i)){
