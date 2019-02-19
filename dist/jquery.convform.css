@@ -128,6 +128,7 @@ div.conv-form-wrapper div#messages {
 }
 div.conv-form-wrapper * {
     scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 div.conv-form-wrapper div#messages:after {
     content: '';
