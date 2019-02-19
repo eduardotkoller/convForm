@@ -123,6 +123,11 @@ div.conv-form-wrapper div#messages {
     max-height: 71vh;
     height: auto !important;
     overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none; /* IE 11 */
+}
+div.conv-form-wrapper * {
+    scrollbar-width: none;
 }
 div.conv-form-wrapper div#messages:after {
     content: '';
