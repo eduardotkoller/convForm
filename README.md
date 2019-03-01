@@ -129,6 +129,8 @@ You can add an options object as a parameter to the convForm function, containin
 * ```formIdName```: html id for the form
 * ```inputIdName```: html id for the user's input
 * ```loadSpinnerVisible```: class for the loadSpinner
+* ```selectInputStyle```: `show` (default), `disable` or `hide` -- tells the plugin how to handle the input field when a question is a `select`.
+* ```selectInputDisabledText```: The text to show on the input on select questions in case the `selectInputStyle` is set to `disable`.
 
 
 ```javascript

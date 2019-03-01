@@ -164,6 +164,18 @@ ConvState.prototype.printAnswers = function(answers, multiple){
         $(this.wrapper).find('.wrapper-messages').data('originalHeight', originalHeight);
         $(this.wrapper).find('.wrapper-messages').css({marginBottom: diff, maxHeight: originalHeight-diff});
     }
+    if(this.parameters.selectInputStyle=='disable') {
+        $(this.wrapper).find('#'+this.parameters.inputIdName).prop('disabled', true);
+        $(this.wrapper).find('#'+this.parameters.inputIdName).attr('placeholder', this.parameters.selectInputDisabledText);
+    } else if(this.parameters.selectInputStyle=='hide') {
+        if(!this.current.input.multiple) {
+            $(this.wrapper).find('#'+this.parameters.inputIdName).css({display: 'none'});
+            $(this.wrapper).find('#convForm button').css({display: 'none'});
+        } else {
+            $(this.wrapper).find('#'+this.parameters.inputIdName).prop('disabled', true);
+            $(this.wrapper).find('#'+this.parameters.inputIdName).attr('placeholder', this.parameters.selectInputDisabledText);
+        }
+    }
 
 };
 ConvState.prototype.answerWith = function(answerText, answerObject) {
@@ -191,8 +203,22 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
         answerText = answerText.replace(/./g, '*');
     var message = $('<div class="message from">'+answerText+'</div>');
 
+    if(this.current.input.type=='select' && this.parameters.selectInputStyle=='disable') {
+        $(this.wrapper).find('#'+this.parameters.inputIdName).prop('disabled', false);
+        $(this.wrapper).find('#'+this.parameters.inputIdName).attr('placeholder', this.parameters.placeHolder);
+    } else if(this.current.input.type=='select' && this.parameters.selectInputStyle=='hide') {
+        if(!this.current.input.multiple) {
+            $(this.wrapper).find('#'+this.parameters.inputIdName).css({display: 'block'});
+            $(this.wrapper).find('#convForm button').css({display: 'block'});
+        } else {
+            $(this.wrapper).find('#'+this.parameters.inputIdName).prop('disabled', false);
+            $(this.wrapper).find('#'+this.parameters.inputIdName).attr('placeholder', this.parameters.placeHolder);
+        }
+    }
+
     //removes options before appending message so scroll animation runs without problems
     $(this.wrapper).find("div.options div.option").remove();
+    
 
 
     var diff = $(this.wrapper).find('div.options').height();
@@ -237,6 +263,8 @@ ConvState.prototype.answerWith = function(answerText, answerObject) {
             typeInputUi : 'textarea',
             timeOutFirstQuestion : 1200,
             buttonClassStyle : 'icon2-arrow',
+            selectInputStyle: 'show',
+            selectInputDisabledText: 'Select an option',
             eventList : {
                 onSubmitForm : function(convState) {
                     console.log('completed');
