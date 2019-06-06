@@ -1,3 +1,6 @@
+### Note: I will not maintain this anymore. I unfortunately don't have enough time to work on new features and bugfixes.
+I started this as a side project and it brought itself to life, with many people seeing different uses to this, in ways completely different from what is was originally supposed to do. I may sometime in the uncertain future re-do this from the ground up to attain those possibilities, but currently I don't have enough time to work on this, sorry. If you want to help with anything, feel free to open pull requests.
+
 # convForm
 
 A plugin that transforms a form into a interative chat.
@@ -148,11 +151,6 @@ $(function(){
 
 Beware that the callback functions are called inside the `onInputSubmit` function. If you are changing this event function, you shouldn't need to use callback functions in the HTML tags, but if you for some reason do need them, besure to call them here using `window[convState.current.input.callback](convState, readyCallback);`
 
-### Donate
-
-If you like the plugin, consider buying me a cup of coffe.
-
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=eduardotkoller%40gmail%2ecom&lc=US&item_name=convForm&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
 
 #### Stuff used to make this:
 
