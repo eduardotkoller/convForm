@@ -8,73 +8,285 @@
 	<link rel="stylesheet" type="text/css" href="dist/jquery.convform.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="demo.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+	  <style>
+        /* Style for discussion bubble */
+        .discussion-bubble {
+            position: fixed;
+            bottom: 30px;
+            right: 35px;
+            outline: none;
+            border: none;
+            height: 50px;
+            width: 50px;
+            display: flex;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #1f8e92;
+            transition: all 0.2s ease;
+        }
+        body.show-chatbot .discussion-bubble {
+            transform: rotate(90deg);
+        }
+        .discussion-bubble span {
+            color: #fff;
+            position: absolute;
+        }
+        .discussion-bubble span:last-child,
+        body.show-chatbot .discussion-bubble span:first-child  {
+            opacity: 0;
+        }
+        body.show-chatbot .discussion-bubble span:last-child {
+            opacity: 1;
+        }
+
+
+
+      /* Style for convForm container */
+	  #convFormContainer {
+    position: absolute;
+    right: 35px;
+    bottom: 90px;
+    width: 20%; /* Adjust the width as a percentage of the viewport width */
+    max-width: 420px; /* Set a maximum width */
+    background: #fff;
+    border-radius: 15px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.5);
+    transform-origin: bottom right;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Add color shadow */
+    transition: all 0.4s ease; /* Adjust the transition duration */
+}
+
+
+/* Add hover effect for a smoother transition */
+#convFormContainer:hover {
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); /* Increase shadow on hover */
+}
+
+body.show-chatbot #convFormContainer {
+    /* position: relative; */
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+    width: 80%; /* Adjust the width as a percentage of the viewport width */
+    max-width: 550px; /* Set a maximum width */
+    height: 680px; /* Adjust the height automatically based on content */
+    overflow-y: scroll; /* Add vertical scrollbar if content exceeds height */
+}
+
+
+    </style>
 </head>
 <body>
-	<section id="demo">
-	    <div class="vertical-align">
-	        <div class="container">
-	            <div class="row">
-	                <div class="col-sm-6 col-sm-offset-3 col-xs-offset-0">
-	                    <div class="card no-border">
-	                        <div id="chat" class="conv-form-wrapper">
-	                            <form action="" method="GET" class="hidden">
-	                                <select data-conv-question="Hello! I'm a bot created from a HTML form. Can I show you some features? (this question comes from a select)" name="first-question">
-	                                    <option value="yes">Yes</option>
-	                                    <option value="sure">Sure!</option>
-	                                </select>
-	                                <input type="text" name="name" data-conv-question="Alright! First, tell me your full name, please.|Okay! Please, tell me your name first.">
-	                                <input type="text" data-conv-question="Howdy, {name}:0! It's a pleasure to meet you. (note that this question doesn't expect any answer)" data-no-answer="true">
-	                                <input type="text" data-conv-question="This plugin supports multi-select too. Let's see an example." data-no-answer="true">
-	                                <select name="multi[]" data-conv-question="What kind of music do you like?" multiple>
-	                                    <option value="Rock">Rock</option>
-	                                    <option value="Pop">Pop</option>
-	                                    <option value="Country">Country</option>
-	                                    <option value="Classic">Classic</option>
-	                                </select>
-	                                <select name="programmer" data-callback="storeState" data-conv-question="So, are you a programmer? (this question will fork the conversation based on your answer)">
-	                                    <option value="yes">Yes</option>
-	                                    <option value="no">No</option>
-	                                </select>
-	                                <div data-conv-fork="programmer">
-	                                    <div data-conv-case="yes">
-	                                        <input type="text" data-conv-question="A fellow programmer! Cool." data-no-answer="true">
-	                                    </div>
-	                                    <div data-conv-case="no">
-		                                    <select name="thought" data-conv-question="Have you ever thought about learning? Programming is fun!">
-		                                    	<option value="yes">Yes</option>
-		                                    	<option value="no">No..</option>
-		                                    </select>
-	                                    </div>
-	                                </div>
-	                                <input type="text" data-conv-question="convForm also supports regex patterns. Look:" data-no-answer="true">
-	                                <input data-conv-question="Type in your e-mail" data-pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" id="email" type="email" name="email" required placeholder="What's your e-mail?">
-	                                <input data-conv-question="Now tell me a secret (like a password)" type="password" data-minlength="6" id="senha" name="password" required placeholder="password">
-									<select data-conv-question="Selects also support callback functions. For example, try one of these:">
-											<option value="google" data-callback="google">Google</option>
-											<option value="bing" data-callback="bing">Bing</option>
-									</select>
-	                                <select name="callbackTest" data-conv-question="You can do some cool things with callback functions. Want to rollback to the 'programmer' question before?">
-	                                    <option value="yes" data-callback="rollback">Yes</option>
-	                                    <option value="no" data-callback="restore">No</option>
-	                                </select>
-	                                <select data-conv-question="This is it! If you like me, consider donating! If you need support, contact me. When the form gets to the end, the plugin submits it normally, like you had filled it." id="">
-	                                    <option value="">Awesome!</option>
-	                                </select>
+	 <!-- Discussion bubble -->
+	 <!-- <div class="discussion-bubble" id="discussionBubble"><span>&#x1F4AC;</span><span>&#x27A1;</span></div> -->
+	 <button class="discussion-bubble" id="discussionBubble">
+		<span class="material-symbols-rounded">mode_comment</span>
+		<span class="material-symbols-outlined">close</span>
+	  </button>
+
+
+
+  <!-- the outerContainer -->
+
+	  <div id="outerContainer">
+
+		<!-- Your convForm container -->
+		<div id="convFormContainer">
+
+			<section >
+				
+				<div class="vertical-align">
+					<!-- <div class="container">
+						<div class="row"> -->
+							<!-- <div class=" col-sm-offset-3  "> -->
+								<div class="card no-border">
+									<div id="chat" class="conv-form-wrapper">
+										<form action="" method="GET" class="hidden">
+														
+												<select name="accueil" data-callback="storeState" data-conv-question="Bonjour, comment je peux vous aider? | Comment je peux vous assister ?">
+													<option value="info">Informations</option>
+													<option value="commande">Commande</option>
+													<option value="service">Service</option>
+													<option value="devis">Devis</option>
+												</select>
+
+												<div data-conv-fork="accueil">
+
+													<div data-conv-case="service">
+														<!-- <input type="text" data-conv-question="A fellow programmer! Cool." data-no-answer="true"> -->
+
+														<select name="type"  data-conv-question="Quel type de service ?">
+															<option value="tapisserie">Tapisserie</option>
+															<option value="lavage">Lavage & Finition</option>
+															<option value="mesure">Prise de mesures</option>
+														</select>
+
+														<div data-conv-fork="type">
+
+															<div data-conv-case="tapisserie">
+																<input type="text" data-conv-question="Pour une tapisserie fine et excellente, veuillez contacter nos experts sur le numéro suivant:  +216 54 553 452 " data-no-answer="true">
+															</div>
+
+															<div data-conv-case="lavage">
+																<input type="text" data-conv-question="Pour demander ce service, veuillez contacter le +216 54 553 452 " data-no-answer="true">
+															</div>
+
+															<div data-conv-case="mesure">
+																<input type="text" data-conv-question="Pour mieux planifier la prise de mesures, veuillez contacter le +216 54 553 452 " data-no-answer="true">
+															</div>
+														</div>
+
+													</div>
+
+													<div data-conv-case="info">
+
+														<select name="prod"  data-conv-question="Voulez-vous consulter un produit spécifique ?">
+															<option value="voilage">Voilage</option>
+															<option value="tissus">Tissus</option>
+															<option value="velours">Velours</option>
+															<option value="stores">Stores</option>
+															<option value="blackout">Tissus blackout</option>
+															<option value="decoration">Décoration</option>
+														</select>
+														<div data-conv-fork="prod">
+
+															<div data-conv-case="voilage">
+																<select type="text" data-conv-question="Vous pouvez en savoir plus en cliquant sur le bouton 'Page' ci-dessous.">
+																	<option value="siteVoiles" data-callback="siteVoiles">Page</option>
+																</select>
+															</div>
+
+															<div data-conv-case="tissus">
+																<select type="text" data-conv-question="Vous pouvez avoir plus d'informations sur les tissus disponibles en cliquant sur le bouton 'Page' ci-dessous.">
+																	<option value="siteTissus" data-callback="siteTissus">Page</option>
+																</select>
+															</div>
+
+															<div data-conv-case="velours">
+																<select type="text" data-conv-question="Vous pouvez avoir plus d'informations sur les velours disponibles en cliquant sur le bouton 'Page' ci-dessous.">
+																	<option value="siteVelours" data-callback="siteVelours">Page</option>
+																</select>
+															</div>
+
+															<div data-conv-case="stores">
+																<select type="text" data-conv-question="Vous pouvez avoir plus d'informations sur les stores disponibles en cliquant sur le bouton 'Page' ci-dessous.">
+																	<option value="siteStores" data-callback="siteStores">Page</option>
+																</select>
+															</div>
+
+															<div data-conv-case="blackout">
+																<select type="text" data-conv-question="Vous pouvez avoir plus d'informations sur les tissus blackout disponibles en cliquant sur le bouton 'Page' ci-dessous.">
+																	<option value="siteBlackout" data-callback="siteBlackout">Page</option>
+																</select>
+															</div>
+
+															<div data-conv-case="decoration">
+																<select type="text" data-conv-question="Vous pouvez avoir plus d'informations sur les décorations disponibles en cliquant sur le bouton 'Page' ci-dessous.">
+																	<option value="siteDeco" data-callback="siteDeco">Page</option>
+																</select>
+															</div>
+
+													</div>
+
+													<div data-conv-case="commande">
+														<select name="thought" data-conv-question="Have you ever thought about learning? Programming is fun!">
+															<option value="yes">Yes</option>
+															<option value="no">No..</option>
+														</select>
+													</div>
+
+													<div data-conv-case="devis">
+														<input type="text" data-conv-question="A fellow programmer! Cool." data-no-answer="true">
+													</div>
+
+												</div>
+												<!-- <input type="text" data-conv-question="convForm also supports regex patterns. Look:" data-no-answer="true">
+												<input data-conv-question="Type in your e-mail" data-pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" id="email" type="email" name="email" required placeholder="What's your e-mail?">
+												<input data-conv-question="Now tell me a secret (like a password)" type="password" data-minlength="6" id="senha" name="password" required placeholder="password">
+												-->
+												<!-- <select data-conv-question="Selects also support callback functions. For example, try one of these:">
+														<option value="google" data-callback="google">Google</option>
+														<option value="bing" data-callback="bing">Bing</option>
+												</select>  -->
+												<select name="callbackTest" data-conv-question="Avez-vous encore besoin d'une assistance ?">
+													<option value="yes" data-callback="rollback">Oui</option>
+													<option value="no" data-callback="restore">Non</option>
+												</select>
+												<select data-conv-question="This is it! If you like me, consider donating! If you need support, contact me. When the form gets to the end, the plugin submits it normally, like you had filled it." id="">
+													<option value="">Awesome!</option>
+												</select>
 	                            </form>
 	                        </div>
 	                    </div>
-	                </div>
-	            </div>
-	        </div>
+	                 <!-- </div> -->
+	           <!-- </div>
+	        </div> -->
 	    </div>
 	</section>
+</div>
+</div>
+
 	<script type="text/javascript" src="jquery-1.12.3.min.js"></script>
 	<script type="text/javascript" src="dist/autosize.min.js"></script>
 	<script type="text/javascript" src="dist/jquery.convform.js"></script>
+    
+		<!-- <script>
+		// JavaScript to handle discussion bubble toggle
+		$(document).ready(function () {
+		  $("#discussionBubble").click(function () {
+			$("#convFormContainer").toggleConvForm();
+		  });
+		});
+	  </script> -->
+	
 
+
+	  <!-- Script to handle discussion bubble toggle -->
+<script>
+// jQuery to handle discussion bubble toggle
+$(document).ready(function() {
+    $("#discussionBubble").click(function() {
+        $("body").toggleClass("show-chatbot");
+    });
+});
+
+</script>
+
+
+
+
+
+	 
 	<script>
-		function google(stateWrapper, ready) {
-			window.open("https://google.com");
+		function siteVoiles(stateWrapper, ready) {
+			window.open("https://bayarideauxetdeco.com/voilage/");
+			ready();
+		}
+		function siteTissus(stateWrapper, ready) {
+			window.open("https://bayarideauxetdeco.com/tissu/");
+			ready();
+		}
+		function siteVelours(stateWrapper, ready) {
+			window.open("https://bayarideauxetdeco.com/velour/");
+			ready();
+		}
+		function siteStores(stateWrapper, ready) {
+			window.open("https://bayarideauxetdeco.com/voilage/");
+			ready();
+		}
+		function siteBlackout(stateWrapper, ready) {
+			window.open("https://bayarideauxetdeco.com/voilage/");
+			ready();
+		}
+		function siteDeco(stateWrapper, ready) {
+			window.open("https://bayarideauxetdeco.com/voilage/");
 			ready();
 		}
 		function bing(stateWrapper, ready) {
@@ -108,11 +320,23 @@
 			}
 			ready();
 		}
+// Function to scroll down to the bottom of the container
+function scrollToBottom() {
+    var container = document.getElementById("convFormContainer");
+    container.scrollTop = container.scrollHeight;
+}
+
+// Call the scrollToBottom function whenever needed
+scrollToBottom();
+
 	</script>
+
+
+
+
 	<script>
 		jQuery(function($){
-			convForm = $('#chat').convform({selectInputStyle: 'disable'});
-			console.log(convForm);
+			convForm= $('#chat').convForm({selectInputStyle: 'disable'});
 		});
 	</script>
 </body>
